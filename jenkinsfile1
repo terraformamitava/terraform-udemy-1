@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clone Repository') {
+            steps {
+                    withCredentials([
+                    usernamePassword(credentialsId: 'git-credentials', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')
+                ]) {
+                    git url: 'https://github.com/terraformamitava/terraform-udemy-1.git', credentialsId: 'git-credentials', branch: 'main'
+                }
+                    
+                    sh '''
+                    ls -lrt
+                    pwd
+                    '''
+                }
+            }
+         stage('Terraform initialize....'){
+            steps{
+                echo "Within Init block...."
+                echo "[INFO] INITIALIZE STAGE HAS BEGUN"
+                        sh '''
+                            pwd
+                            
+                            ls -lrt
+                            terraform init
+                        '''
+            }
+        }
+        stage('Terraform Plan....'){
+            steps{
+                echo "[INFO] PLAN STAGE HAS BEGUN"
+                        sh '''
+                            terraform plan
+                        '''
+            }
+        }
+        stage('Terraform apply....'){
+            steps{
+                echo "[INFO] Apply STAGE HAS BEGUN"
+                        sh '''
+                            terraform apply -auto-approve
+                        '''
+            }
+        }
+    }  
+}    
